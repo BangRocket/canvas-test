@@ -1,50 +1,30 @@
 <template>
   <v-layout>
+    <v-row>
+      <v-col cols="12" sm="6">
+        <v-text-field v-model="canvasHeight" single-line solo></v-text-field>
+        <v-text-field v-model="canvasWidth" single-line solo></v-text-field>
+        <v-btn @click="refresh" large color="primary">Refresh Grid</v-btn>
+      </v-col>
+    </v-row>
     <v-flex>
-      <div :style="style" :class="{ showborder: border }" class="viewport">
-        <canvas
-          :id="0"
-          :key="0"
-          :ref="'bg'"
-          :name="'bg'"
-          :height="height"
-          :width="width"
-        ></canvas>
-        <canvas
-          :id="1"
-          :key="1"
-          :ref="'poi'"
-          :name="'poi'"
-          :height="height"
-          :width="width"
-        ></canvas>
-        <canvas
-          :id="2"
-          :key="2"
-          :ref="'overlay'"
-          :name="'overlay'"
-          :height="height"
-          :width="width"
-        ></canvas>
-        <canvas
-          :id="3"
-          :key="3"
-          :ref="'text'"
-          :name="'text'"
-          :height="height"
-          :width="width"
-        ></canvas>
-      </div>
+      <ItemTable
+        :ref="'table'"
+        :width="canvasWidth"
+        :height="canvasHeight"
+        :border="border"
+      >
+      </ItemTable>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import ItemTable from '../components/ItemTable.vue'
 
 export default {
-  name: 'LightWorldMap',
-  components: {},
+  name: 'CanvasPage',
+  components: { ItemTable },
   props: {
     id: {
       type: [String],
@@ -56,72 +36,30 @@ export default {
     },
     height: {
       type: Number,
-      default: 500
+      default: 300
     },
     width: {
       type: Number,
-      default: 500
+      default: 600
     }
   },
   data() {
     return {
-      style: {
-        // initial size of canvas/container
-        height: this.height + 'px',
-        width: this.width + 'px'
-      },
-      layername: 'canvas' + this.counter,
-      counter: 0
+      canvasHeight: this.height,
+      canvasWidth: this.width
     }
   },
   computed: {},
   created() {},
   mounted() {
-    for (const canvas in this.$refs) {
-      const ctx = this.$refs[canvas].getContext('2d')
-      ctx.font = '30px Arial'
-      ctx.fillStyle = 'yellow'
-      ctx.fillText(`${canvas}`, 10, 50 * this.counter + 50)
-      this.context({ layer: canvas, context: ctx })
-      this.counter++
-    }
-  },
-  provide() {
-    return {
-      layers: this.$refs
-    }
+    console.log(this)
   },
   methods: {
-    ...mapMutations({
-      context: 'canvas/setContext'
-    })
+    refresh() {
+      this.$refs.table.renderGrid()
+    }
   }
 }
 </script>
 
-<style scoped>
-.viewport {
-  /**
-      * Position relative so that canvas elements
-      * inside of it will be relative to the parent
-      */
-  position: relative;
-}
-
-.viewport canvas {
-  /**
-      * Position absolute provides canvases to be able
-      * to be layered on top of each other
-      * Be sure to remember a z-index!
-      */
-  position: absolute;
-}
-
-canvas {
-  background-color: transparent;
-}
-
-.showborder {
-  border: 5px solid red;
-}
-</style>
+<style scoped></style>
