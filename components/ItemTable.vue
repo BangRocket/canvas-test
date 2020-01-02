@@ -2,7 +2,7 @@
   <div :style="style" :class="{ showborder: border }" class="viewport">
     <canvas
       :id="0"
-      :key="bgDraw"
+      :key="0"
       :ref="'bg'"
       :name="'bg'"
       :height="canvasHeight"
@@ -10,7 +10,7 @@
     ></canvas>
     <canvas
       :id="1"
-      :key="poiDraw"
+      :key="1"
       :ref="'poi'"
       :name="'poi'"
       :height="canvasHeight"
@@ -18,7 +18,7 @@
     ></canvas>
     <canvas
       :id="2"
-      :key="overlayDraw"
+      :key="2"
       :ref="'overlay'"
       :name="'overlay'"
       :height="canvasHeight"
@@ -26,7 +26,7 @@
     ></canvas>
     <canvas
       :id="3"
-      :key="textDraw"
+      :key="3"
       :ref="'text'"
       :name="'text'"
       :height="canvasHeight"
@@ -121,7 +121,11 @@ export default {
         this.canvasWidth / (imageWidth + imagePadding * 2)
       )
 
-      // console.log(itemsPerRow, itemsPerCol)
+      console.log(
+        this.canvasHeight / (imageHeight + imagePadding * 2),
+        this.canvasWidth / (imageWidth + imagePadding * 2)
+      )
+      console.log(itemsPerRow, itemsPerCol)
 
       // itemContainer is going to be IPR/C divided by width/height
 
@@ -146,16 +150,16 @@ export default {
       const hDiff = currentRow - this.canvasHeight
       const wDiff = currentCol - this.canvasWidth
 
-      console.log('height diff: ', hDiff)
-      console.log('width diff: ', wDiff)
+      // console.log('height diff: ', hDiff)
+      // console.log('width diff: ', wDiff)
 
       if (Math.sign(currentCol - this.canvasWidth) === 1) {
-        console.log('wdiff')
+        // console.log('wdiff')
 
         const addWVal = Math.floor(wDiff / itemsPerCol)
         const addWVal2 = Math.floor(wDiff / (itemsPerCol - 1) - addWVal)
 
-        console.log(addWVal, addWVal2)
+        // console.log(addWVal, addWVal2)
 
         itemContainerHeight += addWVal + addWVal2
         cols.forEach((col, index) => {
@@ -165,7 +169,7 @@ export default {
       }
 
       if (Math.sign(currentRow - this.height) === 1) {
-        console.log('hdiff')
+        // console.log('hdiff')
 
         const addHVal = Math.floor(hDiff / itemsPerRow)
         const addHVal2 = Math.floor(hDiff / (itemsPerRow - 1) - addHVal)
@@ -181,8 +185,8 @@ export default {
       const ctx = this.$refs.bg.getContext('2d')
 
       ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
-      console.log('rows', rows)
-      console.log('cols', cols)
+      // console.log('rows', rows)
+      // console.log('cols', cols)
 
       for (const col of cols) {
         for (const row of rows) {
@@ -207,24 +211,22 @@ export default {
             y2: row + itemContainerHeight
           })
 
-          const imageColLoc = col - imageHeight + (imageHeight + imagePadding)
-          const imageRowLoc = row - imageWidth + (imageWidth + imagePadding)
+          const colCenter = (col + (col + itemContainerWidth)) / 2
+          const rowCenter = (row + (row + itemContainerHeight)) / 2
 
-          console.log(imageColLoc, imageRowLoc)
+          const imageColLoc = colCenter - imageWidth / 2
+          const imageRowLoc = rowCenter - imageHeight / 2
+
+          // console.log(imageColLoc, imageRowLoc)
 
           ctx.beginPath()
           ctx.lineWidth = '4'
           ctx.strokeStyle = 'yellow'
-          ctx.rect(
-            col + imagePadding + 10,
-            row + imagePadding,
-            imageWidth,
-            imageHeight
-          )
+          ctx.rect(imageColLoc - 1, imageRowLoc - 1, imageWidth, imageHeight)
           ctx.stroke()
         }
       }
-      console.log(cells)
+      // console.log(cells)
     },
     ...mapMutations({
       context: 'canvas/setContext'
