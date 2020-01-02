@@ -2,7 +2,7 @@
   <div :style="style" :class="{ showborder: border }" class="viewport">
     <canvas
       :id="0"
-      :key="0"
+      :key="bgDraw"
       :ref="'bg'"
       :name="'bg'"
       :height="canvasHeight"
@@ -10,7 +10,7 @@
     ></canvas>
     <canvas
       :id="1"
-      :key="1"
+      :key="poiDraw"
       :ref="'poi'"
       :name="'poi'"
       :height="canvasHeight"
@@ -18,7 +18,7 @@
     ></canvas>
     <canvas
       :id="2"
-      :key="2"
+      :key="overlayDraw"
       :ref="'overlay'"
       :name="'overlay'"
       :height="canvasHeight"
@@ -26,7 +26,7 @@
     ></canvas>
     <canvas
       :id="3"
-      :key="3"
+      :key="textDraw"
       :ref="'text'"
       :name="'text'"
       :height="canvasHeight"
@@ -96,6 +96,9 @@ export default {
       this.context({ layer: canvas, context: ctx })
       this.counter++
     }
+    this.renderGrid()
+  },
+  updated() {
     this.renderGrid()
   },
   provide() {},
