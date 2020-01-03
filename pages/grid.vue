@@ -39,6 +39,7 @@
           :frameW="containerWidth"
           :frameH="containerHeight"
           :border="border"
+          :split="split"
         >
         </ItemGrid>
       </v-col>
@@ -78,7 +79,14 @@ export default {
       containerWidth: 500
     }
   },
-  computed: {},
+  computed: {
+    split() {
+      if (this.$route.query.split === 'true') {
+        return true
+      }
+      return false
+    }
+  },
   created() {},
   mounted() {
     console.log(this)
