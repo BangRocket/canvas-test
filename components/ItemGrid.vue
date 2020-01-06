@@ -129,9 +129,9 @@ export default {
   created() {},
   mounted() {
     this.calculateCells()
-    this.addItem({ visible: true, count: 0, active: true, drawn: false }, 15) // visible is if image is shown, active is dim, count will be for bottle 'n shit
-    this.addItem({ visible: true, count: 0, active: true, drawn: false }, 20)
-    this.addItem({ visible: true, count: 0, active: true, drawn: false }, 24)
+    this.addItem({ visible: true, count: 0, active: false, drawn: false }, 15) // visible is if image is shown, active is dim, count will be for bottle 'n shit
+    this.addItem({ visible: true, count: 0, active: false, drawn: false }, 20)
+    this.addItem({ visible: true, count: 0, active: false, drawn: false }, 24)
     this.renderCells()
 
     // 2, 11, 16, 19, 31
