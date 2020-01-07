@@ -1,6 +1,7 @@
 export const state = () => ({
   bg: null,
-  poi: null,
+  item: null,
+  hit: null,
   overlay: null,
   text: null
 })
@@ -13,16 +14,19 @@ export const mutations = {
 }
 
 export const getters = {
-  getBackgroundContext() {
+  getBackgroundContext(state) {
     return state.bg
   },
-  getPOIContext() {
-    return state.poi
+  getHitContext(state) {
+    return state.hit
   },
-  getOverlayContext() {
+  getOverlayContext(state) {
     return state.overlay
   },
-  getTextContext() {
+  getTextContext(state) {
     return state.text
+  },
+  getItemContext(state) {
+    return state.item
   }
 }

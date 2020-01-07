@@ -32,7 +32,7 @@
         </v-col>
       </v-col>
       <v-col cols="10">
-        <ItemGrid2
+        <ItemGrid
           :ref="'table'"
           :width="canvasWidth"
           :height="canvasHeight"
@@ -41,18 +41,18 @@
           :border="border"
           :split="split"
         >
-        </ItemGrid2>
+        </ItemGrid>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import ItemGrid2 from '../components/ItemGrid2.vue'
+import ItemGrid from '../components/ItemGrid.vue'
 
 export default {
   name: 'CanvasPage',
-  components: { ItemGrid2 },
+  components: { ItemGrid },
   props: {
     id: {
       type: [String],

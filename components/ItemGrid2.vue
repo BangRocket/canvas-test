@@ -7,52 +7,64 @@
     <!-- <span>
       <p v-for="(value, index) in hitDetect">{{ index }} : {{ value }}</p>
     </span> -->
-    <canvas
+    <VCanvas
       :id="0"
       :key="0"
       :ref="'hit'"
       :name="'hit'"
       :height="canvasHeight"
       :width="canvasWidth"
-    ></canvas>
-    <canvas
+    ></VCanvas>
+    <VCanvas
       :id="1"
       :key="1"
+      :ref="'bg'"
+      :name="'bg'"
+      :height="canvasHeight"
+      :width="canvasWidth"
+      :class="{ showborder: border }"
+    ></VCanvas>
+    <VCanvas
+      :id="2"
+      :key="2"
       :ref="'item'"
       :name="'item'"
       :height="canvasHeight"
       :width="canvasWidth"
       :class="{ showborder: border }"
-    ></canvas>
-    <canvas
-      :id="2"
-      :key="2"
+    ></VCanvas>
+    <VCanvas
+      :id="3"
+      :key="3"
       :ref="'overlay'"
       :name="'overlay'"
       :height="canvasHeight"
       :width="canvasWidth"
       :class="{ showborder: border }"
-    ></canvas>
-    <canvas
-      :id="3"
-      :key="3"
+    ></VCanvas>
+    <VCanvas
+      :id="4"
+      :key="4"
       :ref="'text'"
       :name="'text'"
       :height="canvasHeight"
       :width="canvasWidth"
-      v-on:click="hitCheck"
-      v-on:mousemove="showHitLocationValues"
-    ></canvas>
+      v-on:click.native="hitCheck"
+      v-on:mousemove.native="showHitLocationValues"
+    ></VCanvas>
     <slot></slot>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
+import VCanvas from '../components/canvas/VCanvas.vue'
 
 export default {
   name: 'ItemTable',
-  components: {},
+  components: {
+    VCanvas
+  },
   props: {
     id: {
       type: String,
@@ -158,7 +170,8 @@ export default {
       this.hitDetect.offsetY = e.offsetY
     },
     hitCheck(e) {
-      const hitCtx = this.$refs.hit.getContext('2d')
+      console.log('holy dang')
+      const hitCtx = this.getHitContext()
       const pixel = hitCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data
       const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`
 
@@ -229,7 +242,7 @@ export default {
       /* this should only be called once or when the whole table needs
           to be re-rendered. something else needs to ne done for resize calcuarions
       */
-      let ctx = this.$refs.item.getContext('2d')
+      let ctx = this.getItemContext()
 
       for (const value in this.items) {
         const cell = this.cells[value]
@@ -244,7 +257,7 @@ export default {
         // ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
         // image
 
-        ctx = this.$refs.item.getContext('2d')
+        ctx = this.getItemContext()
 
         if (this.border) {
           console.log('renderCells: border (%s)', value)
@@ -258,13 +271,13 @@ export default {
         if (item.visible) {
           console.log('renderCells: text (%s)', value)
           // sanity check
-          ctx = this.$refs.text.getContext('2d')
+          ctx = this.getTextContext()
           ctx.font = '15px Arial'
           ctx.fillStyle = 'red'
           ctx.fillText(`${value}`, cell.x1 + 30, cell.y1 + 40)
 
           console.log('renderCells: image (%s)', value)
-          ctx = this.$refs.item.getContext('2d')
+          ctx = this.getItemContext()
           ctx.beginPath()
           ctx.lineWidth = '1'
           ctx.strokeStyle = 'yellow'
@@ -279,7 +292,7 @@ export default {
 
           console.log('renderCells: hitbox (%s)', value)
           // add hit color box
-          ctx = this.$refs.hit.getContext('2d')
+          ctx = this.getHitContext()
 
           ctx.beginPath()
           ctx.lineWidth = '1'
@@ -299,7 +312,7 @@ export default {
         console.log('renderCells: overlay (%s)', value)
         if (!item.active && !cell.overlay.darken) {
           // add a fake dim overlay
-          ctx = this.$refs.overlay.getContext('2d')
+          ctx = this.getOverlayContext()
           ctx.beginPath()
           ctx.lineWidth = '1'
           ctx.strokeStyle = 'black' // background color?
@@ -334,7 +347,7 @@ export default {
     updateCell(value) {
       // maybe we should pass specific things to update into this? is it faster? does it matter?
       if (value > 0) {
-        let ctx = this.$refs.item.getContext('2d')
+        let ctx = this.getItemContext()
 
         const cell = this.cells[value]
 
@@ -359,13 +372,13 @@ export default {
           if (item.visible) {
             console.log('updateCell: text (%s)', value)
             // sanity check
-            ctx = this.$refs.text.getContext('2d')
+            ctx = this.getTextContext()
             ctx.font = '15px Arial'
             ctx.fillStyle = 'red'
             ctx.fillText(`${value}`, cell.x1 + 30, cell.y1 + 40)
 
             console.log('updateCell: image (%s)', value)
-            ctx = this.$refs.item.getContext('2d')
+            ctx = this.getItemContext()
             ctx.beginPath()
             ctx.lineWidth = '1'
             ctx.strokeStyle = 'yellow'
@@ -382,7 +395,7 @@ export default {
           console.log('updateCell: overlay (%s)', value)
           if (!item.active && !cell.overlay.darken) {
             // add a fake dim overlay
-            ctx = this.$refs.overlay.getContext('2d')
+            ctx = this.getOverlayContext()
             ctx.beginPath()
             ctx.lineWidth = '1'
             ctx.strokeStyle = 'black' // background color?
@@ -390,7 +403,7 @@ export default {
             ctx.fillRect(cell.x1, cell.y1, this.imageSize, this.imageSize)
             cell.overlay.darken = true
           } else {
-            ctx = this.$refs.overlay.getContext('2d')
+            ctx = this.getOverlayContext()
             ctx.clearRect(cell.x1, cell.y1, this.imageSize, this.imageSize)
             cell.overlay.darken = false
           }
@@ -411,6 +424,13 @@ export default {
     },
     ...mapMutations({
       context: 'canvas/setContext'
+    }),
+    ...mapGetters({
+      getBackgroundContext: 'canvas/getBackgroundContext',
+      getHitContext: 'canvas/getHitContext',
+      getTextContext: 'canvas/getTextContext',
+      getItemContext: 'canvas/getItemContext',
+      getOverlayContext: 'canvas/getOverlayContext'
     })
   }
 }
