@@ -32,7 +32,7 @@
         </v-col>
       </v-col>
       <v-col cols="10">
-        <ItemGrid2
+        <Stage
           :ref="'table'"
           :width="canvasWidth"
           :height="canvasHeight"
@@ -41,18 +41,33 @@
           :border="border"
           :split="split"
         >
-        </ItemGrid2>
+          <!-- <Grid> -->
+          <Cell>
+            <Item :name="'glove'" :loc="0" :value="1" :layer="'item'"></Item>
+          </Cell>
+          <Cell>
+            <Item
+              :name="'moonpearl'"
+              :loc="1"
+              :value="true"
+              :layer="'item'"
+            ></Item>
+          </Cell>
+          <!-- </Grid> -->
+        </Stage>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import ItemGrid2 from '../components/ItemGrid2.vue'
+import Stage from '../components/Stage.vue'
+import Cell from '../components/canvas/Cell.vue'
+import Item from '../components/Item.vue'
 
 export default {
   name: 'CanvasPage',
-  components: { ItemGrid2 },
+  components: { Stage, Cell, Item },
   props: {
     id: {
       type: [String],

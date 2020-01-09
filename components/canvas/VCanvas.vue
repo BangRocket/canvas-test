@@ -34,7 +34,8 @@ export default {
   },
   data() {
     return {
-      context: null
+      context: null,
+      draw: 0
     }
   },
   computed: {

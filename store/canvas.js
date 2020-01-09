@@ -3,13 +3,18 @@ export const state = () => ({
   item: null,
   hit: null,
   overlay: null,
-  text: null
+  text: null,
+  registered: {}
 })
 
 export const mutations = {
   setContext(state, payload) {
-    // console.log('STATE: ', state, payload)
+    // layer: target layer, context: canvas 2d context
     state[payload.layer] = payload.context
+  },
+  registerCanvasElement(state, payload) {
+    // id: element id of component, element: element of component
+    state.registered[payload.id] = payload.element
   }
 }
 
@@ -28,5 +33,10 @@ export const getters = {
   },
   getItemContext(state) {
     return state.item
+  },
+  getContext(state) {
+    return (id) => {
+      return state[id]
+    }
   }
 }
