@@ -41,19 +41,19 @@
           :border="border"
           :split="split"
         >
-          <!-- <Grid> -->
-          <Cell>
-            <Item :name="'glove'" :loc="0" :value="1" :layer="'item'"></Item>
-          </Cell>
-          <Cell>
-            <Item
-              :name="'moonpearl'"
-              :loc="1"
-              :value="true"
-              :layer="'item'"
-            ></Item>
-          </Cell>
-          <!-- </Grid> -->
+          <Grid>
+            <Cell>
+              <Item :name="'glove'" :loc="0" :value="1" :layer="'item'"></Item>
+            </Cell>
+            <Cell>
+              <Item
+                :name="'moonpearl'"
+                :loc="1"
+                :value="true"
+                :layer="'item'"
+              ></Item>
+            </Cell>
+          </Grid>
         </Stage>
       </v-col>
     </v-row>
@@ -62,12 +62,13 @@
 
 <script>
 import Stage from '../components/Stage.vue'
-import Cell from '../components/canvas/Cell.vue'
+import Cell from '../components/Cell.vue'
 import Item from '../components/Item.vue'
+import Grid from '../components/Grid.vue'
 
 export default {
   name: 'CanvasPage',
-  components: { Stage, Cell, Item },
+  components: { Stage, Cell, Item, Grid },
   props: {
     id: {
       type: [String],

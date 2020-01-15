@@ -1,5 +1,6 @@
 export const state = () => ({
-  cells: []
+  cells: [],
+  hits: []
 })
 
 export const mutations = {
@@ -8,6 +9,12 @@ export const mutations = {
   },
   registerCells(state, payload) {
     state.cells = payload
+  },
+  registerHit(state, payload) {
+    state.hits.push(payload.data)
+  },
+  registerHits(state, payload) {
+    state.hits = payload
   }
 }
 
@@ -17,5 +24,11 @@ export const getters = {
   },
   getCells(state) {
     return state.cells
+  },
+  getHit(state, payload) {
+    return state.hits[payload.id]
+  },
+  getHits(state) {
+    return state.hits
   }
 }

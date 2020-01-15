@@ -1,18 +1,24 @@
+<!---
+  Grid -  A collection of dynamically sized elements within a Stage representing possible locations
+          for Cell objects to be rendered.
+
+          Handles sizing of Grid, rendering of Grid-level effects, and rendering of hit tracking grid
+  --->
 <template>
   <span><slot></slot></span>
 </template>
 
 <script>
 import { mapMutations, mapGetters } from 'vuex'
-import Cell from '../../scripts/cell.js'
+import Cell from '../scripts/cell.js'
 
 export default {
-  name: 'Cell',
+  name: 'Grid',
   components: {},
   props: {
     id: {
       type: String,
-      default: 'cell'
+      default: 'grid'
     },
     border: {
       type: Boolean,
@@ -104,20 +110,6 @@ export default {
   },
   provide: {},
   methods: {
-    hitCheck(e) {
-      const hitCtx = this.getHitContext()
-      const pixel = hitCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data
-      const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`
-
-      for (const hitbox in this.hits) {
-        if (this.hits[hitbox] === color) {
-          console.log(hitbox)
-          // this.items[hitbox].active = !this.items[hitbox].active
-          this.updateCell(hitbox)
-        }
-      }
-      // console.log(color)
-    },
     getRandomColor() {
       const r = Math.round(Math.random() * 255)
       const g = Math.round(Math.random() * 255)
@@ -152,6 +144,10 @@ export default {
           if ((rows * this.imageSize) / this.frameH > 0.8) {
             continue
           }
+
+          const hitColor = this.getRandomColor()
+          this.hits[cellCounter] = hitColor
+
           // instead of drawing, lets just save the location of this cell
           const cell = new Cell(
             this.dimensions,
@@ -159,7 +155,8 @@ export default {
             cols * this.imageSize,
             rows * this.imageSize,
             cols * this.imageSize * 2,
-            rows * this.imageSize * 2
+            rows * this.imageSize * 2,
+            hitColor
           )
           newCells.push(cell)
           cellCounter = cellCounter + 1
@@ -172,6 +169,7 @@ export default {
       ) {
         this.cells = newCells
         this.saveCell(newCells)
+        this.saveHits(this.hits)
         this.renderCells()
       }
     },
@@ -207,25 +205,25 @@ export default {
           ctx.fillStyle = 'red'
           ctx.fillText(`${value}`, cell.x1 + 30, cell.y1 + 40)
         }
-
-        // console.log('renderCells: hitbox (%s)', value)
-        // add hit color box
-        ctx = this.getHitContext()
-
-        ctx.beginPath()
-        ctx.lineWidth = '1'
-        const hitColor = this.getRandomColor()
-        this.hits[value] = hitColor
-        ctx.strokeStyle = hitColor
-        ctx.fillStyle = hitColor
-        ctx.fillRect(
-          cell.x1 + this.padding / 2,
-          cell.y1 + this.padding / 2,
-          this.imageSize - this.padding,
-          this.imageSize - this.padding
-        )
-        ctx.stroke()
+        this.generateHitBox(cell, value)
       }
+    },
+    generateHitBox(cell, value) {
+      const ctx = this.getHitContext()
+
+      ctx.beginPath()
+      ctx.lineWidth = '1'
+      const hitColor = this.getRandomColor()
+      this.hits[value] = hitColor
+      ctx.strokeStyle = hitColor
+      ctx.fillStyle = hitColor
+      ctx.fillRect(
+        cell.x1 + this.padding / 2,
+        cell.y1 + this.padding / 2,
+        this.imageSize - this.padding,
+        this.imageSize - this.padding
+      )
+      ctx.stroke()
     },
 
     updateCells(cells) {
@@ -267,8 +265,8 @@ export default {
       }
     },
     ...mapMutations({
-      context: 'canvas/setContext',
-      saveCell: 'cells/registerCells'
+      saveCell: 'cells/registerCells',
+      saveHits: 'cells/registerHits'
     }),
     ...mapGetters({
       getBackgroundContext: 'canvas/getBackgroundContext',
@@ -281,41 +279,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.viewport {
-  /**
-      * Position relative so that canvas elements
-      * inside of it will be relative to the parent
-      */
-  position: relative;
-}
-
-.viewport canvas {
-  /**
-      * Position absolute provides canvases to be able
-      * to be layered on top of each other
-      * Be sure to remember a z-index!
-      */
-  position: absolute;
-}
-
-.debug .viewport canvas {
-  position: relative !important;
-}
-
-canvas {
-  background-color: transparent;
-}
-
-.showborder canvas {
-  border: 1px solid lime;
-}
-
-.showborder {
-  border: 1px solid red;
-}
-
-.hitcheck {
-  display: none;
-}
-</style>
+<style scoped></style>

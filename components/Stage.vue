@@ -1,3 +1,9 @@
+<!---
+  Stage -   Collection of VCanvas elements making up the distinct layers of the
+            itemTable/mapTable object.
+
+            Handles sizing of VCanvas elements and event fire tracking related to clicks/hits
+  --->
 <template>
   <div
     :style="style"
@@ -11,7 +17,7 @@
       :name="'hit'"
       :height="canvasHeight"
       :width="canvasWidth"
-      class="hitcheck"
+      :class="{ hitcheck: !split }"
     ></VCanvas>
     <VCanvas
       :id="1"
@@ -47,14 +53,14 @@
       :name="'text'"
       :height="canvasHeight"
       :width="canvasWidth"
-      v-on:click.native=""
+      v-on:click.native="hitCheck"
     ></VCanvas>
     <slot></slot>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import VCanvas from '../components/canvas/VCanvas.vue'
 
 export default {
@@ -146,15 +152,24 @@ export default {
   updated() {},
   provide: {},
   methods: {
-    ...mapMutations({
-      context: 'canvas/setContext'
-    }),
+    hitCheck(e) {
+      const hitList = this.getHits()
+      const hitCtx = this.getHitContext()
+      const pixel = hitCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data
+      const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`
+
+      for (const hitbox in hitList) {
+        if (hitList[hitbox] === color) {
+          // make all the children "cells" react to this event
+          console.log(hitbox)
+          // this.items[hitbox].active = !this.items[hitbox].active
+          // this.updateCell(hitbox)
+        }
+      }
+    },
     ...mapGetters({
-      getBackgroundContext: 'canvas/getBackgroundContext',
       getHitContext: 'canvas/getHitContext',
-      getTextContext: 'canvas/getTextContext',
-      getItemContext: 'canvas/getItemContext',
-      getOverlayContext: 'canvas/getOverlayContext'
+      getHits: 'cells/getHits'
     })
   }
 }
@@ -162,19 +177,10 @@ export default {
 
 <style scoped>
 .viewport {
-  /**
-      * Position relative so that canvas elements
-      * inside of it will be relative to the parent
-      */
   position: relative;
 }
 
 .viewport canvas {
-  /**
-      * Position absolute provides canvases to be able
-      * to be layered on top of each other
-      * Be sure to remember a z-index!
-      */
   position: absolute;
 }
 

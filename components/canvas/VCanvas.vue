@@ -1,3 +1,7 @@
+<!---
+  VCanvas - Vue friendly version of a canvas element, saves context to store
+            and provides for local injection
+  --->
 <template>
   <canvas
     :id="id"
